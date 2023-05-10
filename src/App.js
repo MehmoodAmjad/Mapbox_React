@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import mapboxgl from 'mapbox-gl'; // Remove "!" and "eslint-disable-line import/no-webpack-loader-syntax"
 import ReactDOM from "react-dom"
+import axios from 'axios';
+
 mapboxgl.accessToken = 'pk.eyJ1IjoibWVobW9vZDk1MDEiLCJhIjoiY2xoZWl3Z2wyMHpyeTNncnBuaXFkdHFvNCJ9.Mr6A8qVIFGTrM3f8cVIH7A';
 const Popup = ({ country }) => (
   <div className="popup">
@@ -21,7 +23,7 @@ export default function App() {
     map.on('load', function() {
       map.addSource('african-countries', {
         type: 'geojson',
-        data: '/use-mapbox-gl-js-with-react/GeoJsons/africa-outline-with-countries_6.geojson' // Use a relative path
+        data: '/Mapbox_React/GeoJsons/africa-outline-with-countries_6.geojson' // Use a relative path
       });
     });
 
@@ -38,9 +40,13 @@ export default function App() {
       
       var feature = features[0];
       var countryName = feature.properties.name;
-      
-      // Do something with the country name, e.g. show it in an alert dialog
+      // var data = [feature.properties.name,feature.properties.continent,feature.properties.postal]
       // alert(countryName);
+      const featureJSON = JSON.stringify({ feature });
+      axios.post('http://localhost:5000/api/data', {featureJSON})
+        .then(res => console.log(res.data))
+        .catch(err => console.error(err));
+
       const popupNode = document.createElement("div");
       ReactDOM.render(
         <Popup
@@ -52,7 +58,7 @@ export default function App() {
         .setLngLat(e.lngLat)
         .setDOMContent(popupNode)
         .addTo(map)
-
+      
     });
 
     // Get user's current location
